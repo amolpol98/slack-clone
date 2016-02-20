@@ -1,9 +1,31 @@
+let channels = [
+	{'name':'amol1'},
+	{'name':'amol2'}
+]
+
 class Channel extends React.Component {
+	onClick() {
+		console.log('i was clicked', this.props.name);
+	}
 	render() {
 		return (
-			<li>{this.props.name}</li>
+			<li onClick={this.onClick.bind(this)}>{this.props.name}</li>
 		)
 	}
 }
 
-ReactDOM.render(<Channel name='amol'/>,document.getElementById('app'));
+class ChannelList extends React.Component {
+	render() {
+		return (
+			<ul>
+				{this.props.channels.map(channel => {
+					return (
+						<Channel name={channel.name}/>
+					)}
+				)}
+			</ul>
+		)
+	}
+}
+
+ReactDOM.render(<ChannelList channels={channels}/>,document.getElementById('app'));
