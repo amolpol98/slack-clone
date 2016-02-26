@@ -28,4 +28,42 @@ class ChannelList extends React.Component {
 	}
 }
 
-ReactDOM.render(<ChannelList channels={channels}/>,document.getElementById('app'));
+class ChannelForm extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {};
+	}
+	onSubmit(e) {
+		let {channelName} = this.state;
+		console.log(channelName);
+		e.preventDefault();
+		this.setState({
+			channelName: ''
+		});
+	}
+	onChange(e) {
+		this.setState({
+			channelName: e.target.value
+		});
+	}
+	render() {
+		return (
+			<form onSubmit={this.onSubmit.bind(this)}>
+				<input type='text' onChange={this.onChange.bind(this)} value={this.state.channelName}/>
+			</form>
+		)
+	}
+}
+
+class ChannelSection extends React.Component {
+	render() {
+		return (
+			<div>
+				<ChannelList channels={channels}/>
+				<ChannelForm/>
+			</div>
+		)
+	}
+}
+
+ReactDOM.render(<ChannelSection/>,document.getElementById('app'));
