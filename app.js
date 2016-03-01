@@ -1,5 +1,5 @@
 let channels = [
-	{'name':'amol1'},
+	{'name':'amol11'},
 	{'name':'amol2'}
 ]
 
