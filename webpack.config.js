@@ -8,7 +8,6 @@ module.exports = {
 		loaders: [
 			{
 				test: /\.jsx?$/,
-				/*resolveLoader: { root: path.join(__dirname, "node_modules") },*/
 				loader: 'babel-loader',
 				exclude: /node-modules/
 			}
