@@ -19715,17 +19715,40 @@
 				channels: [],
 				activeChannel: {},
 				users: [],
-				messages: []
+				messages: [],
+				connected: false
 			};
 		}
 
 		_createClass(App, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var ws = this.ws = new WebSocket('ws://echo.websocket.org');
+			}
+		}, {
+			key: 'newChannel',
+			value: function newChannel(channel) {
+				var channels = this.state.channels;
+
+				channels.push(channel);
+				this.setState({ channels: channels });
+			}
+		}, {
 			key: 'addChannel',
 			value: function addChannel(name) {
 				var channels = this.state.channels;
 
-				channels.push({ id: channels.length, name: name });
-				this.setState({ channels: channels });
+				/*channels.push({id: channels.length, name});
+	   this.setState({channels});*/
+
+				var msg = {
+					name: 'channel add',
+					data: {
+						id: channels.length,
+						name: name
+					}
+				};
+				this.ws.send(JSON.stringify(msg));
 			}
 		}, {
 			key: 'setChannel',
@@ -19741,11 +19764,16 @@
 				this.setState({ users: users });
 			}
 		}, {
-			key: 'addMesssage',
-			value: function addMesssage(message) {
-				var messages = this.state.messages;
+			key: 'addMessage',
+			value: function addMessage(body) {
+				var activeChannel = this.state.activeChannel;
+				var _state = this.state;
+				var messages = _state.messages;
+				var users = _state.users;
 
-				messages.push({ id: messages.length, message: message });
+				var createdAt = new Date();
+				var author = users.length > 0 ? users[0].name : 'anonymous';
+				messages.push({ id: messages.length, body: body, createdAt: createdAt, author: author });
 				this.setState({ messages: messages });
 			}
 		}, {
@@ -19765,11 +19793,11 @@
 						}),
 						_react2['default'].createElement(_usersUsersectionJsx2['default'], _extends({}, this.state, {
 							setUserName: this.setUserName.bind(this)
-						})),
-						_react2['default'].createElement(_messagesMessagesectionJsx2['default'], _extends({}, this.state, {
-							addMesssage: this.addMesssage.bind(this)
 						}))
-					)
+					),
+					_react2['default'].createElement(_messagesMessagesectionJsx2['default'], _extends({}, this.state, {
+						addMessage: this.addMessage.bind(this)
+					}))
 				);
 			}
 		}]);
@@ -20471,7 +20499,7 @@
 					'ul',
 					null,
 					' ',
-					this.props.maps(function (message) {
+					this.props.messages.map(function (message) {
 						return _react2['default'].createElement(_messageJsx2['default'], { key: message.id, message: message });
 					})
 				);
@@ -20537,6 +20565,11 @@
 							null,
 							message.author
 						)
+					),
+					_react2['default'].createElement(
+						'div',
+						{ className: 'body' },
+						message.body
 					)
 				);
 			}
@@ -20598,12 +20631,14 @@
 			key: 'render',
 			value: function render() {
 				var input = undefined;
-				if (this.props.activeChannel != undefined) {
+				if (this.props.activeChannel !== undefined) {
 					input = _react2['default'].createElement('input', {
 						ref: 'message',
 						type: 'text',
 						className: 'form-control',
 						placeholder: 'Add Message...' });
+				} else {
+					alert('no activeChannel');
 				}
 				return _react2['default'].createElement(
 					'form',
@@ -20622,7 +20657,7 @@
 
 	MessageForm.propTypes = {
 		activeChannel: _react2['default'].PropTypes.object.isRequired,
-		addMessage: _react2['default'].propTypes.func.isRequired
+		addMessage: _react2['default'].PropTypes.func.isRequired
 	};
 
 	exports['default'] = MessageForm;
